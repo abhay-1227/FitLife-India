@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife India - Wellness & Nutrition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        :root {
+            --bg-primary: #0a0f0d;
+            --bg-secondary: #121a16;
+            --fg-primary: #f0f5f1;
+            --fg-secondary: #9ca89f;
+            --accent: #00d4aa;
+            --accent-warm: #ff6b35;
+            --accent-gold: #ffc857;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--fg-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Optimized Animated Background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 107, 53, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 200, 87, 0.04) 0%, transparent 60%),
+                var(--bg-primary);
+        }
+
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            will-change: transform;
+            filter: blur(80px);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 212, 170, 0.15);
+            top: 10%;
+            left: 10%;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 107, 53, 0.12);
+            top: 60%;
+            right: 10%;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 200, 87, 0.1);
+            bottom: 20%;
+            left: 30%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate3d(30px, -30px, 0) scale(1.05);
+            }
+
+            50% {
+                transform: translate3d(-20px, 20px, 0) scale(0.95);
+            }
+
+            75% {
+                transform: translate3d(20px, 30px, 0) scale(1.02);
+            }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 212, 170, 0.15);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 15, 13, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--fg-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-gold) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--fg-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-gold));
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--fg-primary);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--fg-secondary);
+            border: 1px solid transparent;
+        }
+
+        .btn-ghost:hover {
+            color: var(--fg-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #00b894 100%);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 170, 0.4);
+        }
+
+        .btn-warm {
+            background: linear-gradient(135deg, var(--accent-warm) 0%, #e55a2b 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-warm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--fg-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 15, 13, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-nav-link {
+            color: var(--fg-primary);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: calc(100vh - 100px);
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-text h1 span {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text p {
+            font-size: 1.125rem;
+            color: var(--fg-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-card-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .hero-card {
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Section */
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--fg-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2) 0%, rgba(255, 200, 87, 0.2) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--fg-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Nutrition */
+        .nutrition-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .nutrition-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .nutrition-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .nutrition-header p {
+            color: var(--fg-secondary);
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        .nutrition-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .calorie-card {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .calorie-ring {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .calorie-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .calorie-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 12;
+        }
+
+        .calorie-ring-progress {
+            fill: none;
+            stroke: url(#calorieGradient);
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-dasharray: 502;
+            stroke-dashoffset: 502;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .calorie-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .calorie-value .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .calorie-value .unit {
+            font-size: 0.9rem;
+            color: var(--fg-secondary);
+        }
+
+        .macro-card {
+            padding: 1.5rem;
+        }
+
+        .macro-item {
+            margin-bottom: 1rem;
+        }
+
+        .macro-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .macro-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .macro-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .macro-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .macro-fill.protein {
+            background: linear-gradient(90deg, #00d4aa, #00b894);
+        }
+
+        .macro-fill.carbs {
+            background: linear-gradient(90deg, #ffc857, #f4a236);
+        }
+
+        .macro-fill.fats {
+            background: linear-gradient(90deg, #ff6b35, #e55a2b);
+        }
+
+        .food-log-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .add-food-card {
+            padding: 1.5rem;
+        }
+
+        .add-food-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .food-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--fg-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--fg-secondary);
+        }
+
+        .food-log-card {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .food-log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .food-log-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .food-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .food-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .food-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .food-info h4 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .food-info span {
+            font-size: 0.8rem;
+            color: var(--fg-secondary);
+        }
+
+        .food-calories {
+            font-weight: 600;
+            color: var(--accent);
+            margin-right: 1rem;
+            white-space: nowrap;
+        }
+
+        .delete-food {
+            background: transparent;
+            border: none;
+            color: var(--fg-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-food:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .history-card {
+            padding: 1.5rem;
+        }
+
+        .history-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .history-date {
+            color: var(--fg-secondary);
+        }
+
+        .history-calories {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* AI Parser UI Addition */
+        .ai-parser-card {
+            padding: 1.5rem;
+            border: 1px dashed rgba(0, 212, 170, 0.3);
+        }
+
+        .ai-parser-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        .ai-input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ai-input-group .form-input {
+            flex: 1;
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            white-space: nowrap;
+        }
+
+        .btn-ai:hover {
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-ai:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Yoga */
+        .yoga-hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .yoga-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .yoga-hero h1 span {
+            background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .yoga-hero p {
+            color: var(--fg-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .yoga-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .yoga-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            color: var(--fg-secondary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .yoga-tab.active,
+        .yoga-tab:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .yoga-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto 4rem;
+        }
+
+        .yoga-card {
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .yoga-image {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .yoga-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(transparent, rgba(10, 15, 13, 0.9));
+        }
+
+        .yoga-badge {
+            position: absolute;
+            top: 1rem;
+            right: 20px;
+            padding: 0.4rem 0.8rem;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        .yoga-badge.beginner {
+            background: rgba(0, 212, 170, 0.8);
+            color: var(--bg-primary);
+        }
+
+        .yoga-badge.intermediate {
+            background: rgba(255, 200, 87, 0.8);
+            color: var(--bg-primary);
+        }
+
+        .yoga-badge.advanced {
+            background: rgba(255, 107, 53, 0.8);
+            color: white;
+        }
+
+        .yoga-content {
+            padding: 1.5rem;
+        }
+
+        .yoga-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .yoga-content h3 span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 400;
+            margin-top: 0.25rem;
+        }
+
+        .yoga-content p {
+            color: var(--fg-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .yoga-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+        }
+
+        .yoga-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--fg-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--fg-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.25rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--fg-secondary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .auth-form .form-input {
+            width: 100%;
+        }
+
+        .auth-submit {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            color: var(--fg-secondary);
+            font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand p {
+            color: var(--fg-secondary);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            max-width: 300px;
+        }
+
+        .footer-section h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--fg-primary);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-link {
+            color: var(--fg-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            text-align: left;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: var(--fg-secondary);
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--fg-secondary);
+        }
+
+        .empty-state svg {
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .nutrition-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text p {
+                margin: 0 auto 2rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-actions .btn-ghost {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .section {
+                padding: 4rem 1.5rem;
+            }
+
+            .features-grid,
+            .yoga-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .yoga-grid {
+                padding: 0 1rem;
+            }
+
+            .food-form {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-input-group {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-brand p {
+                margin: 1rem auto 0;
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animated">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" data-page="home">
+                <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0f0d"
+                        stroke-width="2.5">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        <line x1="6" y1="1" x2="6" y2="4"></line>
+                        <line x1="10" y1="1" x2="10" y2="4"></line>
+                        <line x1="14" y1="1" x2="14" y2="4"></line>
+                    </svg></div>
+                FitLife India
+            </a>
+            <div class="nav-links">
+                <button class="nav-link active" data-page="home">Home</button>
+                <button class="nav-link" data-page="nutrition">Nutrition</button>
+                <button class="nav-link" data-page="yoga">Yoga & Exercise</button>
+                <button class="nav-link" data-page="about">About</button>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-ghost" id="loginBtn" data-auth="open">Sign In</button>
+                <button class="btn btn-primary" id="userBtn" style="display: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span id="userName"></span>
+                </button>
+                <button class="btn btn-primary" id="getStartedBtn" data-auth="open">Get Started</button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-nav-link" data-page="home">Home</button>
+        <button class="mobile-nav-link" data-page="nutrition">Nutrition</button>
+        <button class="mobile-nav-link" data-page="yoga">Yoga & Exercise</button>
+        <button class="mobile-nav-link" data-page="about">About</button>
+        <button class="btn btn-primary" data-auth="open">Get Started</button>
+    </div>
+
+    <!-- Home Page -->
+    <div class="page active" id="homePage">
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-text reveal">
+                    <h1>Transform Your Life with <span>Ancient Indian Wellness</span></h1>
+                    <p>Discover the perfect blend of traditional yoga practices and modern nutrition science. Track your
+                        daily intake, practice authentic exercises, and achieve your health goals.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" data-page="nutrition">Track Nutrition</button>
+                        <button class="btn btn-warm" data-page="yoga">Explore Yoga</button>
+                    </div>
+                </div>
+                <div class="hero-visual reveal">
+                    <div class="hero-card-container">
+                        <div class="glass-card hero-card">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div
+                                    style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--accent-gold)); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0f0d"
+                                        stroke-width="2">
+                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 1rem; font-weight: 600;">Daily Progress</h4>
+                                    <span style="font-size: 0.85rem; color: var(--fg-secondary);">You're doing
+                                        great!</span>
+                                </div>
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="homeCalories">0</div>
+                                    <div class="stat-label">Calories</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: var(--accent-warm);" id="homeProtein">0g</div>
+                                    <div class="stat-label">Protein</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: var(--accent-gold);" id="homeCarbs">0g</div>
+                                    <div class="stat-label">Carbs</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="homeFats">0g</div>
+                                    <div class="stat-label">Fats</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header reveal">
+                <h2>Why Choose FitLife India?</h2>
+                <p>Experience a holistic approach to wellness combining ancient wisdom with modern tracking technology
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="glass-card feature-card reveal">
+                    <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        </svg></div>
+                    <h3>Smart Nutrition Tracking</h3>
+                    <p>Log your daily meals with detailed macro and micronutrient breakdown. Set goals and track your
+                        progress over time.</p>
+                </div>
+                <div class="glass-card feature-card reveal">
+                    <div class="feature-icon" style="color: var(--accent-warm);"><svg width="28" height="28"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg></div>
+                    <h3>Authentic Indian Yoga</h3>
+                    <p>Access a comprehensive library of traditional Indian yoga poses and exercises for all skill
+                        levels.</p>
+                </div>
+                <div class="glass-card feature-card reveal">
+                    <div class="feature-icon" style="color: var(--accent-gold);"><svg width="28" height="28"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20V10"></path>
+                            <path d="M18 20V4"></path>
+                            <path d="M6 20v-4"></path>
+                        </svg></div>
+                    <h3>Progress Analytics</h3>
+                    <p>Visualize your health journey with detailed charts and historical data. Stay motivated with daily
+                        insights.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="logo" data-page="home">
+                        <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#0a0f0d" stroke-width="2.5">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                            </svg></div>FitLife India
+                    </a>
+                    <p>Empowering millions to achieve their health goals through traditional Indian wellness practices
+                        and modern nutrition science.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <div class="footer-links"><button class="footer-link" data-page="nutrition">Nutrition
+                            Tracker</button><button class="footer-link" data-page="yoga">Yoga Library</button><button
+                            class="footer-link">Progress Reports</button></div>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <div class="footer-links"><button class="footer-link" data-page="about">About Us</button><button
+                            class="footer-link">Careers</button><button class="footer-link">Contact</button></div>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <div class="footer-links"><button class="footer-link">Privacy Policy</button><button
+                            class="footer-link">Terms of Service</button><button class="footer-link">Cookie
+                            Policy</button></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 FitLife India. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Nutrition Page -->
+    <div class="page" id="nutritionPage">
+        <div class="nutrition-container">
+            <div class="nutrition-header reveal">
+                <h1>Nutrition Tracker</h1>
+                <p>Track your daily food intake and monitor your nutritional goals</p>
+            </div>
+            <div class="nutrition-grid">
+                <div class="nutrition-sidebar">
+                    <div class="glass-card calorie-card reveal">
+                        <h3 style="margin-bottom: 0.5rem; font-size: 1rem; color: var(--fg-secondary);">Daily Calories
+                        </h3>
+                        <div class="calorie-ring">
+                            <svg width="180" height="180" viewBox="0 0 180 180">
+                                <defs>
+                                    <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color: #00d4aa" />
+                                        <stop offset="100%" style="stop-color: #ffc857" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="calorie-ring-bg" cx="90" cy="90" r="80" />
+                                <circle class="calorie-ring-progress" id="calorieRing" cx="90" cy="90" r="80" />
+                            </svg>
+                            <div class="calorie-value">
+                                <div class="number" id="calorieNumber">0</div>
+                                <div class="unit">/ 2000 kcal</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card macro-card reveal">
+                        <h3 style="margin-bottom: 1rem; font-size: 1rem;">Macronutrients</h3>
+                        <div class="macro-item">
+                            <div class="macro-header"><span>Protein</span><span id="proteinValue">0g / 150g</span></div>
+                            <div class="macro-bar">
+                                <div class="macro-fill protein" id="proteinBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="macro-item">
+                            <div class="macro-header"><span>Carbohydrates</span><span id="carbsValue">0g / 250g</span>
+                            </div>
+                            <div class="macro-bar">
+                                <div class="macro-fill carbs" id="carbsBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="macro-item">
+                            <div class="macro-header"><span>Fats</span><span id="fatsValue">0g / 65g</span></div>
+                            <div class="macro-bar">
+                                <div class="macro-fill fats" id="fatsBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card macro-card reveal">
+                        <h3 style="margin-bottom: 1rem; font-size: 1rem;">Micronutrients</h3>
+                        <div class="macro-item">
+                            <div class="macro-header"><span>Fiber</span><span id="fiberValue">0g / 30g</span></div>
+                            <div class="macro-bar">
+                                <div class="macro-fill"
+                                    style="width: 0%; background: linear-gradient(90deg, #4ade80, #22c55e);"
+                                    id="fiberBar"></div>
+                            </div>
+                        </div>
+                        <div class="macro-item">
+                            <div class="macro-header"><span>Sugar</span><span id="sugarValue">0g / 50g</span></div>
+                            <div class="macro-bar">
+                                <div class="macro-fill"
+                                    style="width: 0%; background: linear-gradient(90deg, #f472b6, #ec4899);"
+                                    id="sugarBar"></div>
+                            </div>
+                        </div>
+                        <div class="macro-item">
+                            <div class="macro-header"><span>Sodium</span><span id="sodiumValue">0mg / 2300mg</span>
+                            </div>
+                            <div class="macro-bar">
+                                <div class="macro-fill"
+                                    style="width: 0%; background: linear-gradient(90deg, #60a5fa, #3b82f6);"
+                                    id="sodiumBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="food-log-section">
+                    <!-- AI Meal Parser Integration -->
+                    <div class="glass-card ai-parser-card reveal">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                            Smart Meal Parser
+                        </h3>
+                        <div class="ai-input-group">
+                            <input type="text" id="aiMealInput" class="form-input"
+                                placeholder='Try: "2 roti, 1 bowl dal, 1 cup rice"'>
+                            <button class="btn btn-ai" id="aiParseBtn">Analyze</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card add-food-card reveal">
+                        <h3>Add Food Entry</h3>
+                        <form id="foodForm" class="food-form">
+                            <div class="form-group full-width"><label for="foodName">Food Name</label><input type="text"
+                                    id="foodName" class="form-input" placeholder="e.g., Dal Tadka, Roti, Sabzi"
+                                    required></div>
+                            <div class="form-group"><label for="foodCalories">Calories (kcal)</label><input
+                                    type="number" id="foodCalories" class="form-input" placeholder="0" min="0" required>
+                            </div>
+                            <div class="form-group"><label for="foodProtein">Protein (g)</label><input type="number"
+                                    id="foodProtein" class="form-input" placeholder="0" min="0" step="0.1"></div>
+                            <div class="form-group"><label for="foodCarbs">Carbs (g)</label><input type="number"
+                                    id="foodCarbs" class="form-input" placeholder="0" min="0" step="0.1"></div>
+                            <div class="form-group"><label for="foodFats">Fats (g)</label><input type="number"
+                                    id="foodFats" class="form-input" placeholder="0" min="0" step="0.1"></div>
+                            <div class="form-group"><label for="foodFiber">Fiber (g)</label><input type="number"
+                                    id="foodFiber" class="form-input" placeholder="0" min="0" step="0.1"></div>
+                            <div class="form-group"><label for="foodSugar">Sugar (g)</label><input type="number"
+                                    id="foodSugar" class="form-input" placeholder="0" min="0" step="0.1"></div>
+                            <div class="form-group"><label for="foodSodium">Sodium (mg)</label><input type="number"
+                                    id="foodSodium" class="form-input" placeholder="0" min="0"></div>
+                            <div class="form-group full-width"><button type="submit"
+                                    class="btn btn-primary auth-submit"><svg width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>Add Food</button></div>
+                        </form>
+                    </div>
+                    <div class="glass-card food-log-card reveal">
+                        <div class="food-log-header">
+                            <h3>Today's Food Log</h3><span style="font-size: 0.85rem; color: var(--fg-secondary);"
+                                id="todayDate"></span>
+                        </div>
+                        <div class="food-list" id="foodList"></div>
+                    </div>
+                    <div class="glass-card history-card reveal">
+                        <h3>Nutrition History</h3>
+                        <div class="history-list" id="historyList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yoga Page -->
+    <div class="page" id="yogaPage">
+        <div class="yoga-hero reveal">
+            <h1>Discover <span>Indian Yoga & Exercise</span></h1>
+            <p>Explore traditional Indian yoga poses, pranayama breathing techniques, and exercises designed for
+                holistic wellness</p>
+        </div>
+        <div class="yoga-tabs reveal" id="yogaTabs">
+            <button class="yoga-tab active" data-category="all">All</button>
+            <button class="yoga-tab" data-category="yoga">Yoga Asanas</button>
+            <button class="yoga-tab" data-category="pranayama">Pranayama</button>
+            <button class="yoga-tab" data-category="exercise">Indian Exercises</button>
+        </div>
+        <div class="yoga-grid" id="yogaGrid"></div>
+    </div>
+
+    <!-- About Page -->
+    <div class="page" id="aboutPage">
+        <section class="section" style="padding-top: 6rem;">
+            <div class="section-header reveal">
+                <h2>About FitLife India</h2>
+                <p>Bringing ancient Indian wellness wisdom to the modern world</p>
+            </div>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="glass-card reveal" style="padding: 2.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--accent);">Our Mission</h3>
+                    <p style="color: var(--fg-secondary); line-height: 1.8;">FitLife India is dedicated to making
+                        traditional Indian wellness practices accessible to everyone. We combine centuries-old wisdom of
+                        yoga, ayurveda, and Indian dietary practices with modern nutrition science and technology to
+                        help you achieve optimal health.</p>
+                </div>
+                <div class="glass-card reveal" style="padding: 2.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--accent-warm);">Why Indian Wellness?
+                    </h3>
+                    <p style="color: var(--fg-secondary); line-height: 1.8;">Indian wellness practices have been refined
+                        over thousands of years. From the therapeutic poses of Hatha Yoga to the breathing techniques of
+                        Pranayama, from the balanced nutrition of traditional Indian cuisine to the holistic approach of
+                        Ayurveda - these time-tested methods offer comprehensive solutions for modern health challenges.
+                    </p>
+                </div>
+                <div class="glass-card reveal" style="padding: 2.5rem;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--accent-gold);">Our Features</h3>
+                    <ul style="color: var(--fg-secondary); line-height: 2; list-style: none; padding: 0;">
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>Comprehensive nutrition tracking with macro and micronutrients</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>Extensive library of Indian yoga asanas with instructions</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>Pranayama breathing exercises for stress relief</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><svg
+                                width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>Daily progress tracking and historical data</li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem;"><svg width="20" height="20"
+                                viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>Traditional Indian exercises for strength and flexibility</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true">
+        <div class="modal glass-strong">
+            <div class="modal-header">
+                <h2>Welcome</h2>
+                <button class="modal-close" id="closeAuthModal" aria-label="Close modal"><svg width="24" height="24"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg></button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs" id="authTabs">
+                    <button class="auth-tab active" data-auth="login">Sign In</button>
+                    <button class="auth-tab" data-auth="signup">Sign Up</button>
+                </div>
+                <form class="auth-form" id="authForm">
+                    <div class="form-group" id="nameGroup" style="display: none;"><label for="authName">Full
+                            Name</label><input type="text" id="authName" class="form-input"
+                            placeholder="Enter your name"></div>
+                    <div class="form-group"><label for="authEmail">Email Address</label><input type="email"
+                            id="authEmail" class="form-input" placeholder="you@example.com" required></div>
+                    <div class="form-group"><label for="authPassword">Password</label><input type="password"
+                            id="authPassword" class="form-input" placeholder="Enter your password" required></div>
+                    <button type="submit" class="btn btn-primary auth-submit">Continue</button>
+                </form>
+                <div class="divider">or continue with</div>
+                <button class="btn btn-ghost" style="width: 100%; border: 1px solid rgba(255,255,255,0.1);"
+                    id="guestLoginBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Continue as Guest
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ==================== OFFLINE AI MEAL PARSER DATABASE ====================
+            const FOOD_DB = {
+                'roti': { cal: 120, protein: 3.5, carbs: 25, fats: 3.7, fiber: 3.2, sugar: 0.5, sodium: 160 },
+                'chapati': { cal: 120, protein: 3.5, carbs: 25, fats: 3.7, fiber: 3.2, sugar: 0.5, sodium: 160 },
+                'rice': { cal: 130, protein: 2.7, carbs: 28, fats: 0.3, fiber: 0.4, sugar: 0, sodium: 1 },
+                'dal': { cal: 120, protein: 9, carbs: 20, fats: 1.5, fiber: 7, sugar: 2, sodium: 300 },
+                'rajma': { cal: 140, protein: 8.5, carbs: 22, fats: 2.5, fiber: 8, sugar: 1, sodium: 350 },
+                'paneer': { cal: 265, protein: 18, carbs: 1.2, fats: 20, fiber: 0, sugar: 1, sodium: 18 },
+                'chicken': { cal: 165, protein: 31, carbs: 0, fats: 3.6, fiber: 0, sugar: 0, sodium: 74 },
+                'egg': { cal: 78, protein: 6, carbs: 0.6, fats: 5, fiber: 0, sugar: 0.6, sodium: 62 },
+                'milk': { cal: 150, protein: 8, carbs: 12, fats: 8, fiber: 0, sugar: 12, sodium: 105 },
+                'curd': { cal: 98, protein: 11, carbs: 3.4, fats: 4.3, fiber: 0, sugar: 3.4, sodium: 46 },
+                'sabzi': { cal: 80, protein: 3, carbs: 10, fats: 3, fiber: 4, sugar: 3, sodium: 250 },
+                'dal makhani': { cal: 180, protein: 7, carbs: 18, fats: 10, fiber: 5, sugar: 2, sodium: 400 },
+                'palak paneer': { cal: 220, protein: 14, carbs: 8, fats: 16, fiber: 3, sugar: 2, sodium: 500 },
+                'chole': { cal: 160, protein: 8, carbs: 24, fats: 4, fiber: 6, sugar: 4, sodium: 450 },
+                'samosa': { cal: 260, protein: 4, carbs: 25, fats: 17, fiber: 2, sugar: 2, sodium: 350 },
+                'paratha': { cal: 200, protein: 5, carbs: 30, fats: 7, fiber: 3, sugar: 1, sodium: 200 },
+                'idli': { cal: 40, protein: 2, carbs: 8, fats: 0.1, fiber: 0.5, sugar: 0, sodium: 50 },
+                'dosa': { cal: 120, protein: 3, carbs: 18, fats: 4, fiber: 1, sugar: 1, sodium: 300 },
+                'biryani': { cal: 290, protein: 12, carbs: 40, fats: 10, fiber: 1, sugar: 2, sodium: 450 },
+                'lassi': { cal: 120, protein: 5, carbs: 15, fats: 4, fiber: 0, sugar: 12, sodium: 80 },
+                'chai': { cal: 90, protein: 3, carbs: 10, fats: 4, fiber: 0, sugar: 8, sodium: 50 }
+            };
+
+            function parseMealText(text) {
+                const regex = /(\d+)\s*(bowl|cup|glass|plate|pieces?|slices?|servings?)?\s*of\s+([a-zA-Z\s]+)/gi;
+                let match;
+                let totals = { cal: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, sugar: 0, sodium: 0 };
+                let parsedItems = [];
+
+                // Simple fallback for "2 roti" format without "of"
+                const simpleRegex = /(\d+)\s+([a-zA-Z]+)/gi;
+
+                while ((match = regex.exec(text)) !== null) {
+                    const qty = parseInt(match[1]);
+                    const foodName = match[3].trim().toLowerCase();
+                    if (FOOD_DB[foodName]) {
+                        parsedItems.push(`${qty} ${foodName}`);
+                        for (let key in totals) {
+                            totals[key] += FOOD_DB[foodName][key] * qty;
+                        }
+                    }
+                }
+
+                // Reset regex index for simple parser
+                if (parsedItems.length === 0) {
+                    while ((match = simpleRegex.exec(text)) !== null) {
+                        const qty = parseInt(match[1]);
+                        const foodName = match[2].trim().toLowerCase();
+                        if (FOOD_DB[foodName]) {
+                            parsedItems.push(`${qty} ${foodName}`);
+                            for (let key in totals) {
+                                totals[key] += FOOD_DB[foodName][key] * qty;
+                            }
+                        }
+                    }
+                }
+
+                if (parsedItems.length === 0) return null;
+
+                return {
+                    name: parsedItems.join(', '),
+                    ...totals
+                };
+            }
+
+            // ==================== DATA ====================
+            const yogaExercises = [
+                { id: 1, name: "Surya Namaskar", sanskrit: "Sun Salutation", category: "yoga", difficulty: "beginner", duration: "15-20 min", calories: "150-200", description: "A flowing sequence of 12 poses that warms up the entire body, improves flexibility, and energizes the mind.", benefits: ["Full body workout", "Improves flexibility", "Boosts metabolism"], instructions: ["Stand at the front of your mat with feet together", "Inhale, raise arms overhead", "Exhale, fold forward to Uttanasana", "Inhale, step right foot back for Anjaneyasana", "Exhale, step left foot back to Plank", "Lower through Chaturanga", "Inhale to Upward Dog", "Exhale to Downward Dog", "Step right foot forward, repeat on left side"] },
+                { id: 2, name: "Padmasana", sanskrit: "Lotus Pose", category: "yoga", difficulty: "intermediate", duration: "5-15 min", calories: "20-30", description: "A seated meditation pose that promotes calmness, opens the hips, and improves posture.", benefits: ["Calms the mind", "Opens hips", "Improves posture"], instructions: ["Sit with legs extended", "Bend right knee, place foot on left thigh", "Bend left knee, place foot on right thigh", "Keep spine straight and hands on knees", "Breathe deeply and hold"] },
+                { id: 3, name: "Bhujangasana", sanskrit: "Cobra Pose", category: "yoga", difficulty: "beginner", duration: "1-3 min", calories: "30-40", description: "A gentle backbend that strengthens the spine, opens the chest, and relieves stress.", benefits: ["Strengthens back", "Opens chest", "Relieves stress"], instructions: ["Lie face down on the mat", "Place hands under shoulders", "Inhale, lift chest off the ground", "Keep elbows slightly bent", "Hold for 15-30 seconds"] },
+                { id: 4, name: "Anulom Vilom", sanskrit: "Alternate Nostril Breathing", category: "pranayama", difficulty: "beginner", duration: "10-15 min", calories: "10-15", description: "A balancing breathing technique that purifies the nadis and calms the nervous system.", benefits: ["Balances energy", "Reduces anxiety", "Improves focus"], instructions: ["Sit in a comfortable position", "Close right nostril with thumb", "Inhale through left nostril", "Close left nostril, exhale through right", "Inhale through right, close, exhale left", "Continue for 5-10 minutes"] },
+                { id: 5, name: "Kapalbhati", sanskrit: "Skull Shining Breath", category: "pranayama", difficulty: "intermediate", duration: "5-10 min", calories: "50-70", description: "An energizing breathing technique that cleanses the respiratory system and boosts metabolism.", benefits: ["Detoxifies lungs", "Boosts energy", "Improves digestion"], instructions: ["Sit with spine straight", "Take a deep breath in", "Forcefully exhale through nose", "Let inhalation happen naturally", "Start with 20 breaths, increase gradually"] },
+                { id: 6, name: "Dandasana", sanskrit: "Staff Pose", category: "yoga", difficulty: "beginner", duration: "1-2 min", calories: "15-20", description: "A foundational seated pose that improves posture and strengthens the core and back muscles.", benefits: ["Improves posture", "Strengthens core", "Stretches hamstrings"], instructions: ["Sit with legs extended forward", "Flex feet, press through heels", "Place hands beside hips", "Lengthen spine, engage core", "Hold for 30-60 seconds"] },
+                { id: 7, name: "Dand Baithak", sanskrit: "Indian Squats", category: "exercise", difficulty: "intermediate", duration: "10-15 min", calories: "100-150", description: "Traditional Indian squats that build leg strength, improve flexibility, and enhance cardiovascular fitness.", benefits: ["Builds leg strength", "Improves flexibility", "Cardiovascular health"], instructions: ["Stand with feet shoulder-width apart", "Lower into a deep squat", "Keep heels flat on ground", "Stand back up with control", "Repeat for 20-50 repetitions"] },
+                { id: 8, name: "Surya Bhedana", sanskrit: "Right Nostril Breathing", category: "pranayama", difficulty: "beginner", duration: "5-10 min", calories: "10-15", description: "A warming breathing technique that activates the sympathetic nervous system and increases energy.", benefits: ["Increases energy", "Warms the body", "Improves digestion"], instructions: ["Sit comfortably with spine straight", "Close left nostril with ring finger", "Inhale slowly through right nostril", "Close right nostril, hold briefly", "Exhale through left nostril", "Repeat for 5-10 minutes"] },
+                { id: 9, name: "Vrikshasana", sanskrit: "Tree Pose", category: "yoga", difficulty: "beginner", duration: "1-3 min", calories: "20-30", description: "A balancing pose that improves concentration, strengthens legs, and opens the hips.", benefits: ["Improves balance", "Strengthens legs", "Enhances focus"], instructions: ["Stand on one leg", "Place other foot on inner thigh", "Bring hands to prayer position", "Focus on a fixed point", "Hold for 30-60 seconds each side"] },
+                { id: 10, name: "Bethak", sanskrit: "Indian Push-ups", category: "exercise", difficulty: "advanced", duration: "10-15 min", calories: "120-180", description: "Traditional Indian push-ups that build upper body strength, core stability, and shoulder mobility.", benefits: ["Upper body strength", "Core stability", "Shoulder mobility"], instructions: ["Start in a crouch position", "Lower body to ground in an arc", "Push up to crouch position", "Keep core engaged throughout", "Start with 10, build up to 50+"] },
+                { id: 11, name: "Trikonasana", sanskrit: "Triangle Pose", category: "yoga", difficulty: "intermediate", duration: "1-2 min", calories: "25-35", description: "A standing pose that stretches the sides, strengthens legs, and improves balance.", benefits: ["Stretches sides", "Strengthens legs", "Improves balance"], instructions: ["Stand with feet wide apart", "Turn right foot out 90 degrees", "Extend arms to sides", "Reach right hand to right ankle", "Look up at left hand, hold"] },
+                { id: 12, name: "Agnisar Kriya", sanskrit: "Fire Essence Technique", category: "pranayama", difficulty: "advanced", duration: "5 min", calories: "30-40", description: "An advanced technique that strengthens the digestive fire and massages internal organs.", benefits: ["Improves digestion", "Strengthens core", "Massages organs"], instructions: ["Stand with feet hip-width apart", "Exhale completely and hold", "Pump abdomen in and out rapidly", "Continue until you need to inhale", "Practice on empty stomach only"] }
+            ];
+
+            // ==================== REACTIVE STATE ====================
+            const State = {
+                user: null,
+                foods: [],
+                history: [],
+                authMode: 'login',
+
+                init() {
+                    this.loadUser();
+                    this.loadNutrition();
+                    UI.setDate();
+                    this.render();
+                },
+
+                getStorageKey() {
+                    return this.user ? `fitlife_data_${this.user.id}` : 'fitlife_data_guest';
+                },
+
+                safeGet(key) {
+                    try { return JSON.parse(localStorage.getItem(key)); }
+                    catch (e) { localStorage.removeItem(key); return null; }
+                },
+
+                loadUser() {
+                    const data = this.safeGet('fitlife_user');
+                    if (data) this.user = data;
+                },
+
+                loadNutrition() {
+                    const data = this.safeGet(this.getStorageKey());
+                    const today = new Date().toDateString();
+                    if (data) {
+                        this.history = data.history || [];
+                        this.foods = (data.daily && data.daily[today]) ? data.daily[today].foods : [];
+                    } else {
+                        this.history = [];
+                        this.foods = [];
+                    }
+                },
+
+                saveUser() {
+                    if (this.user) localStorage.setItem('fitlife_user', JSON.stringify(this.user));
+                    else localStorage.removeItem('fitlife_user');
+                },
+
+                saveNutrition() {
+                    const today = new Date().toDateString();
+                    const totals = this.getTotals();
+                    const key = this.getStorageKey();
+
+                    let data = this.safeGet(key) || { daily: {}, history: [] };
+                    data.daily = data.daily || {};
+                    data.daily[today] = { foods: this.foods, totals };
+
+                    const existingIndex = data.history.findIndex(h => h.date === today);
+                    if (existingIndex >= 0) data.history[existingIndex] = { date: today, ...totals };
+                    else data.history.unshift({ date: today, ...totals });
+
+                    data.history = data.history.slice(0, 30);
+                    try { localStorage.setItem(key, JSON.stringify(data)); }
+                    catch (e) { console.error("Storage full"); }
+                    this.history = data.history;
+                },
+
+                getTotals() {
+                    return this.foods.reduce((acc, f) => ({
+                        calories: acc.calories + (f.calories || 0),
+                        protein: acc.protein + (f.protein || 0),
+                        carbs: acc.carbs + (f.carbs || 0),
+                        fats: acc.fats + (f.fats || 0),
+                        fiber: acc.fiber + (f.fiber || 0),
+                        sugar: acc.sugar + (f.sugar || 0),
+                        sodium: acc.sodium + (f.sodium || 0)
+                    }), { calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, sugar: 0, sodium: 0 });
+                },
+
+                login(email, name) {
+                    this.user = { email, name: name || email.split('@')[0], id: Date.now() };
+                    this.saveUser();
+                    this.loadNutrition();
+                    this.render();
+                },
+
+                logout() {
+                    this.user = null;
+                    this.foods = [];
+                    this.history = [];
+                    this.saveUser();
+                    this.render();
+                },
+
+                addFood(foodData) {
+                    this.foods.push({
+                        id: Date.now(),
+                        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                        ...foodData
+                    });
+                    this.saveNutrition();
+                    this.render();
+                },
+
+                deleteFood(id) {
+                    this.foods = this.foods.filter(f => f.id !== id);
+                    this.saveNutrition();
+                    this.render();
+                },
+
+                render() {
+                    UI.updateAuth(this.user);
+                    UI.updateNutrition(this.getTotals());
+                    UI.renderFoodList(this.foods);
+                    UI.renderHistory(this.history);
+                }
+            };
+
+            // ==================== UI UPDATES ====================
+            const UI = {
+                elements: {},
+                scrollObserver: null,
+
+                cacheElements() {
+                    const ids = ['loginBtn', 'getStartedBtn', 'userBtn', 'userName', 'authModal', 'nameGroup', 'foodForm', 'foodList', 'historyList', 'yogaGrid', 'todayDate', 'calorieRing', 'calorieNumber', 'homeCalories', 'homeProtein', 'homeCarbs', 'homeFats', 'mobileMenu', 'navbar', 'aiParseBtn', 'aiMealInput'];
+                    ids.forEach(id => this.elements[id] = document.getElementById(id));
+                },
+
+                setDate() {
+                    this.elements.todayDate.textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                },
+
+                updateAuth(user) {
+                    const isLogged = !!user;
+                    this.elements.loginBtn.style.display = isLogged ? 'none' : 'block';
+                    this.elements.getStartedBtn.style.display = isLogged ? 'none' : 'flex';
+                    this.elements.userBtn.style.display = isLogged ? 'flex' : 'none';
+                    if (isLogged) this.elements.userName.textContent = user.name;
+                },
+
+                updateNutrition(t) {
+                    const circumference = 2 * Math.PI * 80;
+                    const offset = circumference - (Math.min(t.calories / 2000, 1) * circumference);
+                    this.elements.calorieRing.style.strokeDashoffset = Math.max(0, offset);
+
+                    this.elements.calorieNumber.textContent = Math.round(t.calories);
+                    this.elements.homeCalories.textContent = Math.round(t.calories);
+                    this.elements.homeProtein.textContent = Math.round(t.protein) + 'g';
+                    this.elements.homeCarbs.textContent = Math.round(t.carbs) + 'g';
+                    this.elements.homeFats.textContent = Math.round(t.fats) + 'g';
+
+                    this.updateBar('protein', t.protein, 150, 'g');
+                    this.updateBar('carbs', t.carbs, 250, 'g');
+                    this.updateBar('fats', t.fats, 65, 'g');
+                    this.updateBar('fiber', t.fiber, 30, 'g');
+                    this.updateBar('sugar', t.sugar, 50, 'g');
+
+                    document.getElementById('sodiumValue').textContent = `${Math.round(t.sodium)}mg / 2300mg`;
+                    document.getElementById('sodiumBar').style.width = Math.min((t.sodium / 2300) * 100, 100) + '%';
+                },
+
+                updateBar(id, current, goal, unit) {
+                    document.getElementById(`${id}Value`).textContent = `${Math.round(current)}${unit} / ${goal}${unit}`;
+                    document.getElementById(`${id}Bar`).style.width = Math.min((current / goal) * 100, 100) + '%';
+                },
+
+                renderFoodList(foods) {
+                    if (foods.length === 0) {
+                        this.elements.foodList.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg><p>No foods logged today. Start tracking!</p></div>`;
+                        return;
+                    }
+                    this.elements.foodList.innerHTML = foods.map(f => `
+                    <div class="food-item">
+                        <div class="food-info">
+                            <h4>${this.escapeHtml(f.name)}</h4>
+                            <span>Added at ${f.time} | P: ${f.protein}g | C: ${f.carbs}g | F: ${f.fats}g</span>
+                        </div>
+                        <span class="food-calories">${f.calories} kcal</span>
+                        <button class="delete-food" data-delete-id="${f.id}" aria-label="Delete food item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                `).join('');
+                },
+
+                renderHistory(history) {
+                    const today = new Date().toDateString();
+                    const past = history.filter(h => h.date !== today).slice(0, 7);
+
+                    if (past.length === 0) {
+                        this.elements.historyList.innerHTML = '<div class="empty-state"><p>No history yet. Keep tracking to see your progress!</p></div>';
+                        return;
+                    }
+
+                    this.elements.historyList.innerHTML = past.map(entry => {
+                        const date = new Date(entry.date);
+                        return `
+                        <div class="history-item">
+                            <div>
+                                <span style="font-weight: 500;">${date.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                                <span style="color: var(--fg-secondary); font-size: 0.8rem; margin-left: 0.5rem;">P: ${Math.round(entry.protein)}g | C: ${Math.round(entry.carbs)}g | F: ${Math.round(entry.fats)}g</span>
+                            </div>
+                            <span class="history-calories">${Math.round(entry.calories)} kcal</span>
+                        </div>
+                    `}).join('');
+                },
+
+                renderYogaGrid(category = 'all') {
+                    const filtered = category === 'all' ? yogaExercises : yogaExercises.filter(y => y.category === category);
+                    this.elements.yogaGrid.innerHTML = filtered.map(yoga => `
+                    <div class="glass-card yoga-card reveal" data-yoga-id="${yoga.id}">
+                        <div class="yoga-image" style="background: linear-gradient(135deg, ${this.getCategoryColor(yoga.category)});">
+                            <span class="yoga-badge ${yoga.difficulty}">${yoga.difficulty}</span>
+                        </div>
+                        <div class="yoga-content">
+                            <h3>${yoga.name}<span>${yoga.sanskrit}</span></h3>
+                            <p>${yoga.description}</p>
+                            <div class="yoga-meta">
+                                <span class="yoga-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${yoga.duration}</span>
+                                <span class="yoga-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg>${yoga.calories} kcal</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                    this.setupScrollAnimations();
+                },
+
+                showYogaModal(id) {
+                    const yoga = yogaExercises.find(y => y.id === parseInt(id));
+                    if (!yoga) return;
+
+                    const modal = document.createElement('div');
+                    modal.className = 'modal-overlay active';
+                    modal.id = 'yogaDetailModal';
+                    modal.setAttribute('role', 'dialog');
+                    modal.innerHTML = `
+                    <div class="modal glass-strong" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <div><h2 style="font-size: 1.5rem;">${yoga.name}</h2><span style="color: var(--accent); font-size: 0.9rem;">${yoga.sanskrit}</span></div>
+                            <button class="modal-close close-yoga-modal" aria-label="Close modal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                                <span class="yoga-badge ${yoga.difficulty}">${yoga.difficulty}</span>
+                                <span style="color: var(--fg-secondary); font-size: 0.9rem;">${yoga.duration}</span>
+                                <span style="color: var(--fg-secondary); font-size: 0.9rem;">${yoga.calories} kcal</span>
+                            </div>
+                            <p style="color: var(--fg-secondary); margin-bottom: 1.5rem;">${yoga.description}</p>
+                            <h4 style="margin-bottom: 0.75rem; color: var(--accent);">Benefits</h4>
+                            <ul style="color: var(--fg-secondary); margin-bottom: 1.5rem; padding-left: 1.25rem;">${yoga.benefits.map(b => `<li style="margin-bottom: 0.25rem;">${b}</li>`).join('')}</ul>
+                            <h4 style="margin-bottom: 0.75rem; color: var(--accent);">Instructions</h4>
+                            <ol style="color: var(--fg-secondary); padding-left: 1.25rem;">${yoga.instructions.map(i => `<li style="margin-bottom: 0.5rem;">${i}</li>`).join('')}</ol>
+                        </div>
+                    </div>
+                `;
+                    document.body.appendChild(modal);
+
+                    const closeHandler = (e) => {
+                        if (e.target === modal || e.target.closest('.close-yoga-modal')) modal.remove();
+                    };
+                    modal.addEventListener('click', closeHandler);
+                },
+
+                getCategoryColor(cat) {
+                    return {
+                        yoga: 'rgba(0, 212, 170, 0.3), rgba(0, 184, 148, 0.2)',
+                        pranayama: 'rgba(255, 200, 87, 0.3), rgba(244, 162, 54, 0.2)',
+                        exercise: 'rgba(255, 107, 53, 0.3), rgba(229, 90, 43, 0.2)'
+                    }[cat] || '';
+                },
+
+                escapeHtml(str) {
+                    const div = document.createElement('div');
+                    div.textContent = str;
+                    return div.innerHTML;
+                },
+
+                setupScrollAnimations() {
+                    // Prevent memory leak: Disconnect old observer before creating new one
+                    if (this.scrollObserver) this.scrollObserver.disconnect();
+
+                    this.scrollObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+                    }, { threshold: 0.1 });
+
+                    document.querySelectorAll('.reveal:not(.visible)').forEach(el => this.scrollObserver.observe(el));
+                }
+            };
+
+            // ==================== EVENT HANDLERS ====================
+            function setupEvents() {
+                // Global Delegation
+                document.addEventListener('click', (e) => {
+                    const pageBtn = e.target.closest('[data-page]');
+                    if (pageBtn) {
+                        e.preventDefault();
+                        showPage(pageBtn.dataset.page);
+                        if (UI.elements.mobileMenu.classList.contains('active')) UI.elements.mobileMenu.classList.remove('active');
+                    }
+
+                    const authBtn = e.target.closest('[data-auth]');
+                    if (authBtn) {
+                        if (authBtn.dataset.auth === 'open') UI.elements.authModal.classList.add('active');
+                        if (authBtn.dataset.auth === 'login' || authBtn.dataset.auth === 'signup') {
+                            State.authMode = authBtn.dataset.auth;
+                            document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.auth === State.authMode));
+                            UI.elements.nameGroup.style.display = State.authMode === 'signup' ? 'flex' : 'none';
+                        }
+                    }
+                });
+
+                // Close Modals
+                document.getElementById('closeAuthModal').addEventListener('click', () => UI.elements.authModal.classList.remove('active'));
+                UI.elements.authModal.addEventListener('click', (e) => { if (e.target === UI.elements.authModal) UI.elements.authModal.classList.remove('active'); });
+
+                // Mobile Menu
+                document.getElementById('mobileMenuBtn').addEventListener('click', () => UI.elements.mobileMenu.classList.toggle('active'));
+
+                // Logout
+                UI.elements.userBtn.addEventListener('click', () => State.logout());
+
+                // Guest Login
+                document.getElementById('guestLoginBtn').addEventListener('click', () => {
+                    State.login('guest@fitlife.in', 'Guest User');
+                    UI.elements.authModal.classList.remove('active');
+                });
+
+                // Auth Form Submit
+                document.getElementById('authForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('authEmail').value;
+                    const password = document.getElementById('authPassword').value;
+                    const name = document.getElementById('authName').value;
+                    if (!email || !password) return alert('Please fill in all fields');
+
+                    State.login(email, name);
+                    UI.elements.authModal.classList.remove('active');
+                    e.target.reset();
+                });
+
+                // AI Parser Logic
+                UI.elements.aiParseBtn.addEventListener('click', () => {
+                    const text = UI.elements.aiMealInput.value.trim();
+                    if (!text) return;
+
+                    const btn = UI.elements.aiParseBtn;
+                    btn.textContent = 'Analyzing...';
+                    btn.disabled = true;
+
+                    // Simulate network delay for UX polish
+                    setTimeout(() => {
+                        const result = parseMealText(text);
+
+                        if (result) {
+                            document.getElementById('foodName').value = result.name;
+                            document.getElementById('foodCalories').value = Math.round(result.cal);
+                            document.getElementById('foodProtein').value = Math.round(result.protein * 10) / 10;
+                            document.getElementById('foodCarbs').value = Math.round(result.carbs * 10) / 10;
+                            document.getElementById('foodFats').value = Math.round(result.fats * 10) / 10;
+                            document.getElementById('foodFiber').value = Math.round(result.fiber * 10) / 10;
+                            document.getElementById('foodSugar').value = Math.round(result.sugar * 10) / 10;
+                            document.getElementById('foodSodium').value = Math.round(result.sodium);
+                            UI.elements.aiMealInput.value = '';
+                        } else {
+                            alert("Couldn't recognize those foods. Try simple inputs like '2 roti, 1 bowl dal'.");
+                        }
+
+                        btn.textContent = 'Analyze';
+                        btn.disabled = false;
+                    }, 600);
+                });
+
+                // Food Form Submit
+                UI.elements.foodForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    State.addFood({
+                        name: document.getElementById('foodName').value,
+                        calories: parseFloat(document.getElementById('foodCalories').value) || 0,
+                        protein: parseFloat(document.getElementById('foodProtein').value) || 0,
+                        carbs: parseFloat(document.getElementById('foodCarbs').value) || 0,
+                        fats: parseFloat(document.getElementById('foodFats').value) || 0,
+                        fiber: parseFloat(document.getElementById('foodFiber').value) || 0,
+                        sugar: parseFloat(document.getElementById('foodSugar').value) || 0,
+                        sodium: parseFloat(document.getElementById('foodSodium').value) || 0
+                    });
+                    e.target.reset();
+                });
+
+                // Food List Delegation (Delete)
+                UI.elements.foodList.addEventListener('click', (e) => {
+                    const deleteBtn = e.target.closest('[data-delete-id]');
+                    if (deleteBtn) State.deleteFood(parseInt(deleteBtn.dataset.deleteId));
+                });
+
+                // Yoga Grid Delegation (Details)
+                UI.elements.yogaGrid.addEventListener('click', (e) => {
+                    const card = e.target.closest('[data-yoga-id]');
+                    if (card) UI.showYogaModal(card.dataset.yogaId);
+                });
+
+                // Yoga Tabs Delegation
+                document.getElementById('yogaTabs').addEventListener('click', (e) => {
+                    const tab = e.target.closest('.yoga-tab');
+                    if (tab) {
+                        document.querySelectorAll('.yoga-tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        UI.renderYogaGrid(tab.dataset.category);
+                    }
+                });
+
+                // Scroll Navbar
+                window.addEventListener('scroll', () => {
+                    UI.elements.navbar.classList.toggle('scrolled', window.scrollY > 50);
+                }, { passive: true });
+            }
+
+            function showPage(pageId) {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+                document.getElementById(pageId + 'Page').classList.add('active');
+                const activeLink = document.querySelector(`.nav-links .nav-link[data-page="${pageId}"]`);
+                if (activeLink) activeLink.classList.add('active');
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                setTimeout(() => {
+                    document.querySelectorAll('.reveal').forEach(el => el.classList.remove('visible'));
+                    UI.setupScrollAnimations();
+                }, 50);
+            }
+
+            // ==================== INITIALIZATION ====================
+            document.addEventListener('DOMContentLoaded', () => {
+                UI.cacheElements();
+                setupEvents();
+                State.init();
+                UI.renderYogaGrid();
+                UI.setupScrollAnimations();
+            });
+
+        })();
+    </script>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

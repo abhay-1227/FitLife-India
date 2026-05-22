@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model FoodEntry {
+  id        String   @id @default(cuid())
+  name      String
+  calories  Int      @default(0)
+  protein   Float    @default(0)
+  carbs     Float    @default(0)
+  fats      Float    @default(0)
+  fiber     Float    @default(0)
+  sugar     Float    @default(0)
+  sodium    Int      @default(0)
+  date      String   @default("")
+  userId    String   @default("guest")
+  createdAt DateTime @default(now())
+}
+
+model YogaPose {
+  id          String @id @default(cuid())
+  name        String
+  sanskrit    String @default("")
+  category    String @default("yoga")
+  difficulty  String @default("beginner")
+  description String @default("")
+  duration    String @default("5 min")
+  benefits    String @default("")
+  image       String @default("")
+}
+
+model NutritionGoal {
+  id       String @id @default(cuid())
+  userId   String @default("guest") @unique
+  calories Int    @default(2000)
+  protein  Int    @default(150)
+  carbs    Int    @default(250)
+  fats     Int    @default(65)
+  fiber    Int    @default(30)
+  sugar    Int    @default(50)
+  sodium   Int    @default(2300)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String   @default("")
+  password  String   @default("")
+  isGuest   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model WaterEntry {
+  id        String   @id @default(cuid())
+  glasses   Int      @default(0)
+  date      String   @default("")
+  userId    String   @default("guest")
+  createdAt DateTime @default(now())
+}
+
+model YogaSession {
+  id          String   @id @default(cuid())
+  name        String
+  duration    Int      @default(0)
+  posesCount  Int      @default(0)
+  completedAt DateTime @default(now())
+  userId      String   @default("guest")
+}
+
+model MealPlan {
+  id        String   @id @default(cuid())
+  day       String   // "monday", "tuesday", etc.
+  mealType  String   // "breakfast", "lunch", "snack", "dinner"
+  foods     String   // JSON string of food items
+  calories  Int      @default(0)
+  protein   Float    @default(0)
+  carbs     Float    @default(0)
+  fats      Float    @default(0)
+  userId    String   @default("guest")
+  createdAt DateTime @default(now())
+}
+
+model SleepEntry {
+  id        String   @id @default(cuid())
+  bedtime   String   // "22:30"
+  wakeTime  String   // "06:00"
+  duration  Float    // hours
+  quality   Int      @default(3) // 1-5
+  date      String   @default("")
+  userId    String   @default("guest")
+  createdAt DateTime @default(now())
+}
