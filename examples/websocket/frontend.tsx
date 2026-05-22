@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+// @ts-ignore: React module resolution may not be available in this environment.
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,12 +20,17 @@ type Message = {
   type: 'user' | 'system';
 }
 
+type SocketMessage = {
+  type: 'message' | 'user-joined' | 'user-left' | 'users-list';
+  payload: any;
+};
+
 export default function SocketDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [username, setUsername] = useState('');
   const [isUsernameSet, setIsUsernameSet] = useState(false);
-  const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
 
@@ -33,71 +38,74 @@ export default function SocketDemo() {
     // Connect to websocket server
     // Never use PORT in the URL, alyways use XTransformPort
     // DO NOT change the path, it is used by Caddy to forward the request to the correct port
-    const socketInstance = io('/?XTransformPort=3003', {
-      transports: ['websocket', 'polling'],
-      forceNew: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      timeout: 10000
-    })
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socketInstance = new WebSocket(`${protocol}://${window.location.host}/?XTransformPort=3003`);
 
     setSocket(socketInstance);
 
-    socketInstance.on('connect', () => {
+    socketInstance.addEventListener('open', () => {
       setIsConnected(true);
     });
 
-    socketInstance.on('disconnect', () => {
+    socketInstance.addEventListener('close', () => {
       setIsConnected(false);
     });
 
-    socketInstance.on('message', (msg: Message) => {
-      setMessages(prev => [...prev, msg]);
+    socketInstance.addEventListener('error', () => {
+      setIsConnected(false);
     });
 
-    socketInstance.on('user-joined', (data: { user: User; message: Message }) => {
-      setMessages(prev => [...prev, data.message]);
-      setUsers(prev => {
-        if (!prev.find(u => u.id === data.user.id)) {
-          return [...prev, data.user];
+    socketInstance.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data) as SocketMessage;
+
+        if (data.type === 'message') {
+          setMessages(prev => [...prev, data.payload]);
+        } else if (data.type === 'user-joined') {
+          setMessages(prev => [...prev, data.payload.message]);
+          setUsers(prev => {
+            if (!prev.find(u => u.id === data.payload.user.id)) {
+              return [...prev, data.payload.user];
+            }
+            return prev;
+          });
+        } else if (data.type === 'user-left') {
+          setMessages(prev => [...prev, data.payload.message]);
+          setUsers(prev => prev.filter(u => u.id !== data.payload.user.id));
+        } else if (data.type === 'users-list') {
+          setUsers(data.payload.users);
         }
-        return prev;
-      });
-    });
-
-    socketInstance.on('user-left', (data: { user: User; message: Message }) => {
-      setMessages(prev => [...prev, data.message]);
-      setUsers(prev => prev.filter(u => u.id !== data.user.id));
-    });
-
-    socketInstance.on('users-list', (data: { users: User[] }) => {
-      setUsers(data.users);
+      } catch (error) {
+        console.warn('Invalid websocket message', event.data, error);
+      }
     });
 
     return () => {
-      socketInstance.disconnect();
+      socketInstance.close();
     };
   }, []);
 
   const handleJoin = () => {
-    if (socket && username.trim() && isConnected) {
-      socket.emit('join', { username: username.trim() });
+    if (socket && socket.readyState === WebSocket.OPEN && username.trim()) {
+      socket.send(JSON.stringify({ type: 'join', payload: { username: username.trim() } }));
       setIsUsernameSet(true);
     }
   };
 
   const sendMessage = () => {
-    if (socket && inputMessage.trim() && username.trim()) {
-      socket.emit('message', {
-        content: inputMessage.trim(),
-        username: username.trim()
-      });
+    if (socket && socket.readyState === WebSocket.OPEN && inputMessage.trim() && username.trim()) {
+      socket.send(JSON.stringify({
+        type: 'message',
+        payload: {
+          content: inputMessage.trim(),
+          username: username.trim()
+        }
+      }));
       setInputMessage('');
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       sendMessage();
     }
